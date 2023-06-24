@@ -43,6 +43,40 @@ def prepare_geo_data():
     return geometries, geo
 
 
+def _create_choropleth_mapbox(geometries, geo, slct_color, center, zoom):
+    fig = px.choropleth_mapbox(
+        geometries[['ID_1', 'NAME_1', 'geometry', slct_color]], 
+        locations='ID_1', 
+        geojson=geo, 
+        hover_name='NAME_1', 
+        color=slct_color, 
+        featureidkey='properties.ID_1', 
+        center=center,
+        zoom=zoom,
+        opacity=0.5
+    )
+    fig.update_geos(fitbounds="locations", visible=True, showsubunits=True, center=center)
+    fig.update_layout(mapbox_style="carto-positron")
+    fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0}) 
+    return fig
+
+
+def create_choropleth_mapbox(slct_color, slct_city):
+    #Tunisia center
+    geometries, geo = prepare_geo_data()
+    center = {'lat': 33.8869, 'lon': 9.5375}
+    zoom = 5
+    if slct_city:
+        geometries = geometries[geometries.NAME_1 == slct_city]
+        zoom = 8
+        centroid = geometries['geometry'].values[0].centroid
+        center = {'lat': centroid.y, 'lon': centroid.x}
+        fig = _create_choropleth_mapbox(geometries, geo, slct_color, center, zoom)
+    else:
+        fig = _create_choropleth_mapbox(geometries, geo, slct_color, center, zoom)
+    return fig
+
+
 def register_callbacks_geomarketing(geo):
 
     # Update Delegations
@@ -57,7 +91,7 @@ def register_callbacks_geomarketing(geo):
     @geo.callback(Output("total-delegations", "children"), [Input('slct_city', 'value')])
     def update_total_number(slct_city):
         return "Number of Delegations: {:,d}".format(
-            len(gdf_all_banks[gdf_all_banks["gouvernorat"] == slct_city])
+            gdf_all_banks[gdf_all_banks["gouvernorat"] == slct_city].delegation.nunique()
         )
 
     # Update the total number of banks branch in Tunisia
@@ -117,30 +151,12 @@ def register_callbacks_geomarketing(geo):
 
         print(slct_city, slct_delegat, slct_bank, slct_color)
 
-        if slct_color:
-            print("#################################")
-            geometries, geo = prepare_geo_data()
-            center = {'lat': 33.8869, 'lon': 9.5375}
-            zoom = 5
-            if slct_city:
-                geometries = geometries[geometries.NAME_1 == slct_city]
-                zoom = 8
-                centroid = geometries['geometry'].values[0].centroid
-                center = {'lat': centroid.y, 'lon': centroid.x}
-            fig = px.choropleth_mapbox(
-                geometries[['ID_1', 'NAME_1', 'geometry', slct_color]], 
-                locations='ID_1', 
-                geojson=geo, 
-                hover_name='NAME_1', 
-                color=slct_color, 
-                featureidkey='properties.ID_1', 
-                center=center,
-                zoom=zoom
-            )
-            fig.update_geos(fitbounds="locations", visible=True, showsubunits=True)
-            fig.update_layout(mapbox_style="carto-positron")
-            fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})    
-            return fig  
+        fig2 = create_choropleth_mapbox(slct_color, slct_city)
+
+        # #add scatter 
+        # for i in range(len(fig2.data)):
+        #     fig.add_trace(fig2.data[i])
+        # fig.update_layout(showlegend=False)
 
         # if city is selected only
         if (slct_city and not slct_delegat and not slct_bank):
@@ -152,8 +168,11 @@ def register_callbacks_geomarketing(geo):
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 8})
-
-            return fig
+            # #add scatter 
+            for i in range(len(fig.data)):
+                fig2.add_trace(fig.data[i])
+            fig2.update_layout(showlegend=False)
+            return fig2
 
         # if city & delegation selected
         if (slct_city and slct_delegat and not slct_bank):
@@ -167,7 +186,11 @@ def register_callbacks_geomarketing(geo):
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
 
-            return fig
+            # #add scatter 
+            for i in range(len(fig.data)):
+                fig2.add_trace(fig.data[i])
+            fig2.update_layout(showlegend=False)
+            return fig2
 
         # if bank is selected only
         if ( not slct_city and not slct_delegat and slct_bank):
@@ -180,7 +203,11 @@ def register_callbacks_geomarketing(geo):
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
 
-            return fig
+            # #add scatter 
+            for i in range(len(fig.data)):
+                fig2.add_trace(fig.data[i])
+            fig2.update_layout(showlegend=False)
+            return fig2
 
         # if city & bank selected
 
@@ -197,7 +224,11 @@ def register_callbacks_geomarketing(geo):
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
 
-            return fig
+            # #add scatter 
+            for i in range(len(fig.data)):
+                fig2.add_trace(fig.data[i])
+            fig2.update_layout(showlegend=False)
+            return fig2
 
         # if city & delegation & bank selected
         if (slct_city and slct_delegat and slct_bank ):
@@ -212,24 +243,11 @@ def register_callbacks_geomarketing(geo):
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
 
-            return fig
-
-        # if slct_color:
-        #     fig = px.choropleth_mapbox(
-        #         geometries[['ID_1', 'NAME_1', 'geometry', slct_color]], 
-        #         locations='ID_1', 
-        #         geojson=geo, 
-        #         hover_name='NAME_1', 
-        #         color=slct_color, 
-        #         featureidkey='properties.ID_1', 
-        #         center={'lat': 33.8869, 'lon': 9.5375},
-        #         zoom=5
-        #     )
-        #     fig.update_geos(fitbounds="locations", visible=True, showsubunits=True)
-        #     fig.update_layout(mapbox_style="carto-positron")
-        #     fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})    
-        #     return fig        
-        
+            # #add scatter 
+            for i in range(len(fig.data)):
+                fig2.add_trace(fig.data[i])
+            fig2.update_layout(showlegend=False)
+            return fig2
 
         #nothing is selected / initial state
         else:
@@ -240,7 +258,11 @@ def register_callbacks_geomarketing(geo):
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
             fig.update_traces(marker={'size': 10})
-            return fig
+            # #add scatter 
+            for i in range(len(fig.data)):
+                fig2.add_trace(fig.data[i])
+            fig2.update_layout(showlegend=False)
+            return fig2
 
 
     @geo.callback(
@@ -261,7 +283,7 @@ def register_callbacks_geomarketing(geo):
                 y=bank_data['banque'].value_counts().values,
                 title="Number of Banks Within this delegation {}".format(
                     slct_delegat),
-                labels=dict(x="Banque", y="Number of branches "))
+                labels=dict(x="banks", y="Number of branches "))
             fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                     marker_line_width=1.5, opacity=0.6)
             return fig
@@ -275,7 +297,7 @@ def register_callbacks_geomarketing(geo):
                 x=bank_data['banque'].value_counts().keys(),
                 y=bank_data['banque'].value_counts().values,
                 title="Number of Banks Within this city {}".format(slct_city),
-                labels=dict(x="Banque", y="Number of branches "))
+                labels=dict(x="Banks", y="Number of branches "))
             fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                     marker_line_width=1.5, opacity=0.6)
             return fig

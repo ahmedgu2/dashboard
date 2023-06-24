@@ -37,6 +37,8 @@ geo_page = html.Div(
                                 dcc.Dropdown(
                                     id="slct_color", options=[{"label": 'Population', "value": '2021'}, {"label": 'Poverty Rate', "value": 'poverty_rate'}], multi=False,
                                     placeholder="Select color",
+                                    clearable=False,
+                                    value='poverty_rate'
                                 )
                             ],
                         ),
