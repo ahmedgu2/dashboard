@@ -14,7 +14,7 @@ import json
 
 
 ### LOAD DATA ####
-df_banks = pd.read_csv('Data/geo_banks.csv')
+df_banks = pd.read_csv('app/geo/Data/geo_banks.csv')
 gdf_all_banks = gpd.GeoDataFrame(df_banks, geometry=gpd.points_from_xy(df_banks.long, df_banks.lat))
 
 def prepare_geo_data():
