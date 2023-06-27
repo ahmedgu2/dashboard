@@ -66,6 +66,7 @@ geo_page = html.Div(
                                             id="slct_delegat", options=[{"label": i, "value": i}
                                                                         for i in gdf_all_banks['delegation'].unique()], multi=False,
                                             placeholder="Select a delegation",
+                                            disabled=True
                                         )
                                     ],
                                 ),

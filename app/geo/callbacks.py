@@ -81,10 +81,17 @@ def register_callbacks_geomarketing(geo):
 
     # Update Delegations
     @geo.callback(
-        dash.dependencies.Output('slct_delegat', 'options'),
+        [
+            dash.dependencies.Output('slct_delegat', 'options'),
+            dash.dependencies.Output('slct_delegat', 'disabled')
+        ],
         [dash.dependencies.Input('slct_city', 'value')])
     def set_delegations_options(slct_city):
-        return [{'label': i, 'value': i} for i in gdf_all_banks[gdf_all_banks["gouvernorat"] == slct_city]['delegation'].unique()]
+        print('aaaaaaaaaaaaaaaaaaa')
+        if slct_city is not None:
+            return [[{'label': i, 'value': i} for i in gdf_all_banks[gdf_all_banks["gouvernorat"] == slct_city]['delegation'].unique()], False]
+        else:
+            return [[{'label': '', 'value': ''}], True]
 
 
     # Update the total number of delegations per city Tag
@@ -95,8 +102,6 @@ def register_callbacks_geomarketing(geo):
         )
 
     # Update the total number of banks branch in Tunisia
-
-
     @geo.callback(Output("total-bank-tunisia", "children"), [Input('slct_bank', 'value')])
     def update_total_number(slct_bank):
         if slct_bank:
@@ -153,17 +158,12 @@ def register_callbacks_geomarketing(geo):
 
         fig2 = create_choropleth_mapbox(slct_color, slct_city)
 
-        # #add scatter 
-        # for i in range(len(fig2.data)):
-        #     fig.add_trace(fig2.data[i])
-        # fig.update_layout(showlegend=False)
-
         # if city is selected only
         if (slct_city and not slct_delegat and not slct_bank):
-
+            
             dff = gdf_all_banks.copy()
             dff = dff[dff["gouvernorat"] == slct_city]
-            fig = px.scatter_mapbox(dff, lat="lat", lon="long", color='banque',
+            fig = px.scatter_mapbox(dff, lat="lat", lon="long",
                                     hover_name="gouvernorat", zoom=8)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
@@ -180,7 +180,7 @@ def register_callbacks_geomarketing(geo):
             dff = gdf_all_banks.copy()
             dff = dff[dff["gouvernorat"] == slct_city]
             dff = dff[dff["delegation"] == slct_delegat]
-            fig = px.scatter_mapbox(dff, lat="lat", lon="long", color='banque',
+            fig = px.scatter_mapbox(dff, lat="lat", lon="long",
                                     hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=10)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
@@ -197,7 +197,7 @@ def register_callbacks_geomarketing(geo):
             print(slct_bank,slct_city,slct_delegat)
             dff = gdf_all_banks.copy()
             dff = dff[dff["banque"] == slct_bank]
-            fig = px.scatter_mapbox(dff, lat="lat", lon="long", color='banque',
+            fig = px.scatter_mapbox(dff, lat="lat", lon="long",
                                     hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=7.5)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
@@ -252,7 +252,7 @@ def register_callbacks_geomarketing(geo):
         #nothing is selected / initial state
         else:
             dff = gdf_all_banks.copy()
-            fig = px.scatter_mapbox(gdf_all_banks, lat="lat", lon="long", color='banque',
+            fig = px.scatter_mapbox(gdf_all_banks, lat="lat", lon="long",
                                     hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=5)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
@@ -283,9 +283,14 @@ def register_callbacks_geomarketing(geo):
                 y=bank_data['banque'].value_counts().values,
                 title="Number of Banks Within this delegation {}".format(
                     slct_delegat),
-                labels=dict(x="banks", y="Number of branches "))
+                labels=dict(x="banks"))
             fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                     marker_line_width=1.5, opacity=0.6)
+            fig.update_layout(margin=dict(l=150))
+            fig.update_yaxes(title='')
+            fig.add_annotation(x=-0.12, y=bank_data['banque'].value_counts().values.max()/2, xref="paper", yref="y", showarrow=False, text="Number <br> of <br> branches", font=dict(size=14), textangle=0)
+
+            
             return fig
 
         # city selected
@@ -300,6 +305,10 @@ def register_callbacks_geomarketing(geo):
                 labels=dict(x="Banks", y="Number of branches "))
             fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                     marker_line_width=1.5, opacity=0.6)
+            fig.update_layout(margin=dict(l=150))
+            fig.update_yaxes(title='')
+            fig.add_annotation(x=-0.12, y=bank_data['banque'].value_counts().values.max()/2, xref="paper", yref="y", showarrow=False, text="Number <br> of <br> branches", font=dict(size=14), textangle=0)
+
             return fig
 
         else:
@@ -313,4 +322,7 @@ def register_callbacks_geomarketing(geo):
                 labels=dict(x="Banks", y="Number of branches "))
             fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                     marker_line_width=1.5, opacity=0.6)
+            fig.update_yaxes(title='')
+            fig.add_annotation(x=-0.12, y=gdf_all_banks['banque'].value_counts().values.max()/2, xref="paper", yref="y", showarrow=False, text="Number <br> of <br> branches", font=dict(size=14), textangle=0)
+
             return fig
