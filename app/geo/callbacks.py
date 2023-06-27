@@ -255,7 +255,7 @@ def register_callbacks_geomarketing(geo):
             fig = px.scatter_mapbox(gdf_all_banks, lat="lat", lon="long",
                                     hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=5)
             fig.update_layout(mapbox_style="carto-positron")
-            fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
+            fig.update_layout(margin={"r": 0, "t": 0, "l": 150, "b": 0})
             fig.update_traces(marker={'size': 10})
             fig.update_traces(marker={'size': 10})
             # #add scatter 
@@ -323,6 +323,7 @@ def register_callbacks_geomarketing(geo):
             fig.update_traces(marker_color='rgb(158,202,225)', marker_line_color='rgb(8,48,107)',
                     marker_line_width=1.5, opacity=0.6)
             fig.update_yaxes(title='')
+            fig.update_layout(margin=dict(l=150))
             fig.add_annotation(x=-0.12, y=gdf_all_banks['banque'].value_counts().values.max()/2, xref="paper", yref="y", showarrow=False, text="Number <br> of <br> branches", font=dict(size=14), textangle=0)
 
             return fig
