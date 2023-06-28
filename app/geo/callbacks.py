@@ -164,7 +164,7 @@ def register_callbacks_geomarketing(geo):
             dff = gdf_all_banks.copy()
             dff = dff[dff["gouvernorat"] == slct_city]
             fig = px.scatter_mapbox(dff, lat="lat", lon="long",
-                                    hover_name="gouvernorat", zoom=8)
+                                    hover_name="banque", hover_data=["gouvernorat", "delegation"], zoom=8)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 8})
@@ -181,7 +181,7 @@ def register_callbacks_geomarketing(geo):
             dff = dff[dff["gouvernorat"] == slct_city]
             dff = dff[dff["delegation"] == slct_delegat]
             fig = px.scatter_mapbox(dff, lat="lat", lon="long",
-                                    hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=10)
+                                    hover_name="banque",hover_data=["gouvernorat", "delegation"], zoom=10)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
@@ -219,7 +219,7 @@ def register_callbacks_geomarketing(geo):
                     & (dff["banque"] == slct_bank)]
            
             fig = px.scatter_mapbox(dff, lat="lat", lon="long", color='banque',
-                                    hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=10)
+                                    hover_name="banque",hover_data=["gouvernorat", "delegation"], zoom=10)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
@@ -238,7 +238,7 @@ def register_callbacks_geomarketing(geo):
             dff = dff[dff["delegation"] == slct_delegat]
             dff = dff[dff["banque"] == slct_bank]
             fig = px.scatter_mapbox(dff, lat="lat", lon="long",
-                                    hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=10)
+                                    hover_name="banque",hover_data=["gouvernorat", "delegation"], zoom=10)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 0, "b": 0})
             fig.update_traces(marker={'size': 10})
@@ -253,7 +253,7 @@ def register_callbacks_geomarketing(geo):
         else:
             dff = gdf_all_banks.copy()
             fig = px.scatter_mapbox(gdf_all_banks, lat="lat", lon="long",
-                                    hover_name="gouvernorat",hover_data=["gouvernorat", "delegation"], zoom=5)
+                                    hover_name="banque",hover_data=["gouvernorat", "delegation"], zoom=5)
             fig.update_layout(mapbox_style="carto-positron")
             fig.update_layout(margin={"r": 0, "t": 0, "l": 150, "b": 0})
             fig.update_traces(marker={'size': 10})
