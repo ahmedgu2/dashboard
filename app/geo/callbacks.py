@@ -108,7 +108,6 @@ def register_callbacks_geomarketing(geo):
             return "Total Number of {} Bank : {:,d}".format(slct_bank,
                                                             len(gdf_all_banks[gdf_all_banks["banque"] == slct_bank]))
 
-
     # Update the total number of banks per city Tag
     @geo.callback(Output("total-bank-city", "children"), [Input('slct_city', 'value')])
     def update_total_number(slct_city):
@@ -116,7 +115,6 @@ def register_callbacks_geomarketing(geo):
                                                         len(
                                                             gdf_all_banks[gdf_all_banks["gouvernorat"] == slct_city])
                                                         )
-
 
     # Update the total number of banks per delegation Tag
     @geo.callback(Output("total-bank-delegation", "children"), [Input('slct_delegat', 'value')])
@@ -126,13 +124,11 @@ def register_callbacks_geomarketing(geo):
                                                             gdf_all_banks[gdf_all_banks["delegation"] == slct_delegat])
                                                         )
 
-
     # Update the total number of banks branch within this city
     @geo.callback(Output("total-bank-branch-city", "children"), [Input('slct_city', 'value'), Input('slct_bank', 'value')])
     def update_total_number(slct_city, slct_bank):
         return "Number of {} Banks branch within this city {} : {:,d}".format(slct_bank.upper() if slct_bank else None, slct_city, len(gdf_all_banks[(gdf_all_banks['gouvernorat'] == slct_city) & (gdf_all_banks['banque'] == slct_bank)])
                                                                             )
-
 
     # Update the total number of banks branch within this delegations
     @geo.callback(Output("total-bank-branch-delegation", "children"), [Input('slct_delegat', 'value'), Input('slct_bank', 'value')])
@@ -154,8 +150,7 @@ def register_callbacks_geomarketing(geo):
     )
     def update_graph(slct_city, slct_delegat, slct_bank, slct_color):
 
-        print(slct_city, slct_delegat, slct_bank, slct_color)
-
+        #create the choropleth map.
         fig2 = create_choropleth_mapbox(slct_color, slct_city)
 
         # if city is selected only

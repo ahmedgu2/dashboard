@@ -21,14 +21,6 @@ geo_page = html.Div(
                 html.Div(
                     className="four columns div-user-controls",
                     children=[
-                        # # html.A(
-                        # #     html.Img(
-                        # #         className="logo",
-                        # #         src=("assets\download.png"),
-                                
-                        # #     ),
-                        # #     href="#",
-                        # ),
                         html.H2("BANKING GEOMARKETING TOOL"),
                         html.Div(
                             className="div-for-dropdown",
